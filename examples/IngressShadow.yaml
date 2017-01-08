@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{.Name}}
+  namespace: {{.Namespace}}
+  labels:
+    firefly.shadowcontroller: {{.Name}}
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{.ServiceName}}
+          servicePort: {{.ServicePort}}

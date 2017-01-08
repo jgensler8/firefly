@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{.Name}}
+  namespace: {{.Namespace}}
+  annotations:
+    nginx.org/rewrites: "serviceName={{.ServiceName}} rewrite=/;"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: {{.FireflyPath}}
+        backend:
+          serviceName: {{.ServiceName}}
+          servicePort: http

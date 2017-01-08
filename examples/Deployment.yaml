@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{.Name}}
+  namespace: {{.Namespace}}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        firefly.selector: "{{.Selector}}"
+    spec:
+      containers:
+      - image: {{.IngressControllerImage}}
+        imagePullPolicy: Always
+        name: {{.ContainerName}}
+        ports:
+        - name: my-http
+          containerPort: 80
+        - name: my-https
+          containerPort: 443
+        args:
+         - -v=3
+         - --watch-namespace={{.WatchNamespace}}

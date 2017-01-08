@@ -1,0 +1,68 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: applications
+  labels:
+    name: application-namespace
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mydeployment
+  namespace: applications
+  labels:
+    app: mydeployment
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: mydeployment
+    spec:
+      containers:
+      - name: mydeployment
+        image: brndnmtthws/nginx-echo-headers:latest
+        ports:
+        - name: my-http
+          containerPort: 8080
+          # hostPort will be a high level port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mydeployment
+  namespace: applications
+  labels:
+    app: mydeployment
+spec:
+  type: NodePort
+  ports:
+  - name: first-thing
+    targetPort: my-http
+    port: 7777
+  selector:
+    app: mydeployment
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mydeployment
+  namespace: applications
+  labels:
+    app: mydeployment
+    firefly.optin: "true"
+spec:
+  rules:
+  - http:
+      paths:
+      # This is more of a "business version", not a commit hash version
+      - path: "/api/myservice/v1/"
+        backend:
+          serviceName: mydeployment
+          servicePort: first-thing
+      # - path: "/api/bundledservice/v1/"
+      #   backend:
+      #     # This could be another container in the same deployment (like a UI to a registry)
+      #     serviceName: mydeployment
+      #     servicePort: second-thing
